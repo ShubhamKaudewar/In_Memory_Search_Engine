@@ -1,5 +1,4 @@
 from src.dao import DocumentDao, IndexDao, Search
-from functools import lru_cache
 
 class DBOperation:
     def __init__(self, session):

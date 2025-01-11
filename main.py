@@ -1,7 +1,12 @@
 from src.service.engine import EngineController
 
 def main():
-    EngineController()
+    controller = EngineController()
+    try:
+        controller.engine.join()  # Main thread waits for Engine
+    except KeyboardInterrupt:
+        controller.stop_engine()
+        print("Engine stopped.")
 
 if __name__ == "__main__":
     main()
