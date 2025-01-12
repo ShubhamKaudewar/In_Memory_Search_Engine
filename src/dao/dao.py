@@ -53,4 +53,4 @@ class IndexDao(DBDao):
 
     def update(self, keywords: List[str], document_id: int) -> None:
         for keyword in keywords:
-            self.index_data[keyword][1].append(document_id)
+            self.index_data[keyword].append(document_id)

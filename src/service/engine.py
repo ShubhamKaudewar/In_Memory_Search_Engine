@@ -1,29 +1,28 @@
 from src.dao import Session
-from src.service.operation import DBOperation
+from src.service import DBOperation, InputController
 import threading
 import logging
 
 class Engine(threading.Thread):
     def __init__(self):
+        super().__init__(target=self.operation)
         self.session = Session()
         self.db_operation = DBOperation(self.session)
         self._kill = threading.Event()
-        super().__init__(target=self.operation)
+        self.input = InputController()
 
     def operation(self):
+        print("Engine started!")
         while not self._kill.is_set():
             try:
                 action = input("Input action: ")
                 if action.upper() == "INSERT":
-                    documents = [x for x in input("provide documents:").split(",")]
-                    self.db_operation.insert_document(documents)
+                    self.db_operation.insert_document(self.input.input(action))
                 elif action.upper() == "SEARCH":
-                    keywords = ["I", "am"]
-                    operation = "not"
-                    result = self.db_operation.search_document(keywords, operation)
+                    result = self.db_operation.search_document(*self.input.input(action))
                     print(result)
                 elif action.upper() == "CLOSE":
-                    print("Closing database!")
+                    print("Closing database!\nEngine Stopped!")
                     self._kill.set()  # Signal the thread to exit
                 else:
                     logging.error("Invalid action provided!")
@@ -41,3 +40,4 @@ class EngineController:
     def stop_engine(self):
         self.engine.stop()
         self.engine.join()  # Wait for the thread to exit
+
